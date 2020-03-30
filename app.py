@@ -1,5 +1,5 @@
 
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, Response
 import os
 import time
 import pygame
@@ -7,8 +7,6 @@ import pygame.camera
 from pygame.locals import *
 import io
 from PIL import Image
-from io import StringIO, BytesIO
-from flask import Response
 
 #cam setup
 pygame.init()
