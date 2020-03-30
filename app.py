@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, send_file, Response
 import os
 import time
@@ -7,6 +6,7 @@ import pygame.camera
 from pygame.locals import *
 import io
 from PIL import Image
+import threading
 
 #cam setup
 pygame.init()
@@ -14,6 +14,8 @@ pygame.camera.init()
 cam = pygame.camera.Camera(pygame.camera.list_cameras()[0],(1920,1080))
 
 app = Flask(__name__)
+lock = threading.Lock()
+
 
 @app.route('/')
 def index():
@@ -27,18 +29,17 @@ def project():
 
 @app.route('/videoMonitor')
 def videoMonitor():
+    lock.acquire()
     cam.start()    
     img = cam.get_image()
     cam.stop()
+    lock.release()
     data = pygame.image.tostring(img, 'RGBA')
     im = Image.frombytes("RGBA",(1920,1080),data)    
     imgByteArr = io.BytesIO()
     im.save(imgByteArr, format='PNG')
-    w=imgByteArr.getvalue()     
+    w=imgByteArr.getvalue()
     return w, 200, {'content-type':'image/png; charset=utf-8;'}
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-    
-
-
